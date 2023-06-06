@@ -1,16 +1,24 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import tiktoken
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def init_env_vars():
+    from dotenv import load_dotenv
+    load_dotenv()
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    init_env_vars()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+def estimate_token_cost(docs):
+    enc = tiktoken.encoding_for_model("gpt-4")
+
+    total_word_count = sum(len(doc.page_content.split()) for doc in docs)
+    total_token_count = sum(len(enc.encode(doc.page_content)) for doc in docs)
+    est_cost = total_token_count * 0.0004 / 1000
+
+    # print(f"\nTotal word count: {total_word_count}")
+    # print(f"Estimated tokens: {total_token_count}")
+    # print(f"Estimated cost of embedding: ${est_cost}\n")
+
+    return total_word_count, total_token_count, est_cost
