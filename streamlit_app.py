@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_chat import message
 
-from utils import ask_bot
+from chatbot import ask_bot, get_sources
 
 # ------------------------------------------------------------------
 # Save history
@@ -17,8 +17,14 @@ st.title("What question do you have for Zorin OS?")
 prompt = st.text_input("Your question")
 
 if prompt:
-    response = ask_bot(prompt)
-    st.empty()
+    result = ask_bot(prompt)
+
+    answer = result['answer']
+    sources = get_sources(result)
+    sources = "\n".join([f"- {source}" for source in sources])
+
+    # add the sources to the answer
+    response = f"{answer}\n\nSource(s):\n {sources}"
 
     # Add the question and the answer to display chat history in a list
     # Latest answer appears at the top
@@ -27,5 +33,5 @@ if prompt:
 
     # Display the chat history
     for i in range(len( st.session_state.question)) :
-        message(st.session_state['question'][i], is_user=True)
-        message(st.session_state['answer'][i], is_user=False)
+        message(st.session_state['question'][i], is_user=True, key=f"question{i}")
+        message(st.session_state['answer'][i], is_user=False, key=f"answer{i}")
